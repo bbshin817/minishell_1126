@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rufurush <rufurush@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbaba <sbaba@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 21:06:23 by kotadashiru       #+#    #+#             */
-/*   Updated: 2025/11/26 15:21:11 by rufurush         ###   ########.fr       */
+/*   Updated: 2025/11/26 17:56:19 by sbaba            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,11 +149,11 @@ typedef struct s_ast
 int								apply_redirs(t_pipex *ps, t_redir *list);
 void							ast_free_a(t_ast *n);
 int								get_exit_status(int stR);
-int								exec_cmd_node(t_ast *node_list, char **envp,
+int								exec_cmd_node(t_ast *node_list,
 									t_pipex *ps);
 int								exec_cmd_pipe_node(t_ast *node_list,
-									char **envp, t_pipex *ps, char *line);
-int								execute_ast(t_ast *node_list, char **envp,
+									t_pipex *ps, char *line);
+int								execute_ast(t_ast *node_list,
 									t_pipex *ps, char *line);
 void							init_history(void);
 void							print_erro(char *err, char *msg);
@@ -165,7 +165,7 @@ int								execute_command(char *cmd_path, char **cmd_args,
 									char **envp, t_pipex *ps);
 char							**get_path_array(char **envp, t_pipex *px);
 char							*resolve_command_path(char *cmd, t_pipex *ps);
-void							execute(int argc, char **argv, char **envp,
+void							execute(int argc, char **argv,
 									t_pipex *ps);
 char							*ft_search_access(char **envp);
 int								init_pipe(char *line, char **envp);
@@ -224,45 +224,42 @@ int								handle_no_cmd_path(t_pipex *ps,
 									char **cmd_args);
 int								validate_cmd_args(char **cmd_args, t_pipex *ps);
 int								rn_wait_pid(pid_t pid);
-pid_t							rn_fork_and_exec(t_pipex *ps, t_ast *node,
-									char **envp);
+pid_t							rn_fork_and_exec(t_pipex *ps, t_ast *node);
 int								rn_status_from_wait(int st);
 int								build_heredoc_fd(t_pipex *ps, const char *delim,
 									int quoted);
 char							*get_env_value(t_pipex *ps, const char *key);
 int								is_valid_identifier(const char *s);
-int								process_parsed_line(char *line, t_pipex *ps,
-									char **envp);
+int								process_parsed_line(char *line, t_pipex *ps);
 int								handle_signals_and_empty(char *line,
 									t_pipex *ps);
-int								process_line(char *line, t_pipex *ps,
-									char **envp);
-int								run_line(char **envp, t_pipex *ps);
+int								process_line(char *line, t_pipex *ps);
+int								run_line(t_pipex *ps);
 int								try_parent_builtin_then_cleanup(t_ast *node_list,
 									t_pipex *ps, char *line, int *handled);
 int								build_nodes_from_line(const char *line,
 									t_ast **out, t_pipex *ps);
 int								validate_cmd_args_like_original(const char *line);
 int								run_pipeline_and_cleanup(t_ast *node_list,
-									t_pipex *ps, char **envp);
+									t_pipex *ps);
 int								post_read_signal_handle(char *line, t_pipex *ps,
 									int *should_continue);
 char							*ms_readline(void);
 int								line_is_empty(const char *line);
-int								run_node(t_pipex *ps, t_ast *node, char **envp);
+int								run_node(t_pipex *ps, t_ast *node);
 int								run_pipe_node(t_pipex *ps, t_ast *left,
-									t_ast *right, char **envp);
+									t_ast *right);
 void							set_signals_parent_wait(void);
 void							set_signals_prompt(void);
 void							set_signals_child(void);
 void							ms_run_left_child(t_pipex *ps, t_ast *left,
-									char **envp, int fds[2]);
+									int fds[2]);
 void							ms_run_right_child(t_pipex *ps, t_ast *right,
-									char **envp, int fds[2]);
+									int fds[2]);
 int								ms_wait_pipe_children(pid_t lp, pid_t rp);
-void							exec_left_child(t_ast *node_list, char **envp,
+void							exec_left_child(t_ast *node_list,
 									t_pipex *ps, char *line, int fds[2]);
-void							exec_right_child(t_ast *node_list, char **envp,
+void							exec_right_child(t_ast *node_list,
 									t_pipex *ps, char *line, int fds[2]);
 int								wait_pipe_children(pid_t left, pid_t right);
 int								is_env_start(int c);
@@ -294,7 +291,7 @@ void							free_arg_list_a(t_arg *a);
 void							free_redirs_a(t_redir *r);
 t_ast							*ast_new_cmd(void);
 int								run_simple_in_this_process(t_pipex *ps,
-									t_ast *cmd, char **envp);
+									t_ast *cmd);
 int								is_space(char c);
 int								is_metachar(char c);
 t_token_type					classify_meta_tokens(char *line, size_t *index);
@@ -322,5 +319,7 @@ int								handle_word_token(t_ast *cmd,
 void							free_token_list(t_token_list **list);
 int								expand_one_loop(t_expand_ctx *ctx);
 char							**ms_update_path_array_from_envlist(t_pipex *ps);
+char							**get_envp_as_string(t_pipex *ps);
+void							free_envp(char **envp);
 
 #endif

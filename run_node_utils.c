@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   run_node_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rufurush <rufurush@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbaba <sbaba@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 16:43:04 by kotadashiru       #+#    #+#             */
-/*   Updated: 2025/11/25 19:03:16 by rufurush         ###   ########.fr       */
+/*   Updated: 2025/11/26 17:53:55 by sbaba            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	rn_status_from_wait(int st)
 	return (status);
 }
 
-pid_t	rn_fork_and_exec(t_pipex *ps, t_ast *node, char **envp)
+pid_t	rn_fork_and_exec(t_pipex *ps, t_ast *node)
 {
 	pid_t	pid;
 	int		st;
@@ -41,7 +41,7 @@ pid_t	rn_fork_and_exec(t_pipex *ps, t_ast *node, char **envp)
 	if (pid == 0)
 	{
 		set_signals_child();
-		st = run_simple_in_this_process(ps, node, envp);
+		st = run_simple_in_this_process(ps, node);
 		_exit(st);
 	}
 	return (pid);

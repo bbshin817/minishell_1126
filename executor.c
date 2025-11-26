@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rufurush <rufurush@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbaba <sbaba@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 17:22:32 by kotadashiru       #+#    #+#             */
-/*   Updated: 2025/11/25 17:56:31 by rufurush         ###   ########.fr       */
+/*   Updated: 2025/11/26 17:50:36 by sbaba            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	setup_pipe_and_left(t_ast *node_list, char **envp, t_pipex *ps, char *line,
+int	setup_pipe_and_left(t_ast *node_list, t_pipex *ps, char *line,
 		int fds[2], pid_t *left)
 {
 	*left = -1;
@@ -26,11 +26,11 @@ int	setup_pipe_and_left(t_ast *node_list, char **envp, t_pipex *ps, char *line,
 		return (1);
 	}
 	if (*left == 0)
-		exec_left_child(node_list, envp, ps, line, fds);
+		exec_left_child(node_list, ps, line, fds);
 	return (0);
 }
 
-int	fork_right_process(t_ast *node_list, char **envp, t_pipex *ps, char *line,
+int	fork_right_process(t_ast *node_list, t_pipex *ps, char *line,
 		int fds[2], pid_t left, pid_t *right)
 {
 	*right = fork();
@@ -42,32 +42,32 @@ int	fork_right_process(t_ast *node_list, char **envp, t_pipex *ps, char *line,
 		return (1);
 	}
 	if (*right == 0)
-		exec_right_child(node_list, envp, ps, line, fds);
+		exec_right_child(node_list, ps, line, fds);
 	return (0);
 }
 
-int	exec_cmd_pipe_node(t_ast *node_list, char **envp, t_pipex *ps, char *line)
+int	exec_cmd_pipe_node(t_ast *node_list, t_pipex *ps, char *line)
 {
 	int		fds[2];
 	pid_t	left;
 	pid_t	right;
 
-	if (setup_pipe_and_left(node_list, envp, ps, line, fds, &left) != 0)
+	if (setup_pipe_and_left(node_list, ps, line, fds, &left) != 0)
 		return (1);
-	if (fork_right_process(node_list, envp, ps, line, fds, left, &right) != 0)
+	if (fork_right_process(node_list, ps, line, fds, left, &right) != 0)
 		return (1);
 	close(fds[0]);
 	close(fds[1]);
 	return (wait_pipe_children(left, right));
 }
 
-int	execute_ast(t_ast *node_list, char **envp, t_pipex *ps, char *line)
+int	execute_ast(t_ast *node_list, t_pipex *ps, char *line)
 {
 	if (!node_list)
 		return (1);
 	if (node_list->type == NODE_CMD)
-		return (exec_cmd_node(node_list, envp, ps));
+		return (exec_cmd_node(node_list, ps));
 	if (node_list->type == NODE_PIPE)
-		return (exec_cmd_pipe_node(node_list, envp, ps, line));
+		return (exec_cmd_pipe_node(node_list, ps, line));
 	return (1);
 }

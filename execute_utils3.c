@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   execute_utils3.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rufurush <rufurush@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbaba <sbaba@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 16:52:26 by kotadashiru       #+#    #+#             */
-/*   Updated: 2025/11/26 13:43:48 by rufurush         ###   ########.fr       */
+/*   Updated: 2025/11/26 17:47:06 by sbaba            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	run_node(t_pipex *ps, t_ast *node, char **envp)
+int	run_node(t_pipex *ps, t_ast *node)
 {
 	pid_t	pid;
 	int		status;
@@ -20,9 +20,9 @@ int	run_node(t_pipex *ps, t_ast *node, char **envp)
 	if (!node)
 		return (0);
 	if (node->type == NODE_PIPE)
-		return (run_pipe_node(ps, node->left, node->right, envp));
+		return (run_pipe_node(ps, node->left, node->right));
 	set_signals_parent_wait();
-	pid = rn_fork_and_exec(ps, node, envp);
+	pid = rn_fork_and_exec(ps, node);
 	status = rn_wait_pid(pid);
 	set_signals_prompt();
 	return (status);

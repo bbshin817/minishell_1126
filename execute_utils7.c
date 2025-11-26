@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_utils7.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rufurush <rufurush@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbaba <sbaba@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 17:14:01 by kotadashiru       #+#    #+#             */
-/*   Updated: 2025/11/25 17:55:44 by rufurush         ###   ########.fr       */
+/*   Updated: 2025/11/26 17:49:45 by sbaba            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 /* ========== exec_cmd_pipe_node の分割 ========== */
 
-void	exec_left_child(t_ast *node_list, char **envp, t_pipex *ps, char *line,
+void	exec_left_child(t_ast *node_list, t_pipex *ps, char *line,
 		int fds[2])
 {
 	int	st;
@@ -23,11 +23,11 @@ void	exec_left_child(t_ast *node_list, char **envp, t_pipex *ps, char *line,
 	if (dup2(fds[1], 1) == -1)
 		_exit(1);
 	close(fds[1]);
-	st = execute_ast(node_list->left, envp, ps, line);
+	st = execute_ast(node_list->left, ps, line);
 	_exit(st);
 }
 
-void	exec_right_child(t_ast *node_list, char **envp, t_pipex *ps, char *line,
+void	exec_right_child(t_ast *node_list, t_pipex *ps, char *line,
 		int fds[2])
 {
 	int	st;
@@ -36,7 +36,7 @@ void	exec_right_child(t_ast *node_list, char **envp, t_pipex *ps, char *line,
 	if (dup2(fds[0], 0) < 0)
 		_exit(1);
 	close(fds[0]);
-	st = execute_ast(node_list->right, envp, ps, line);
+	st = execute_ast(node_list->right, ps, line);
 	_exit(st);
 }
 

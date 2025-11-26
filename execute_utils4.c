@@ -3,20 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   execute_utils4.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rufurush <rufurush@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbaba <sbaba@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 16:54:32 by kotadashiru       #+#    #+#             */
-/*   Updated: 2025/11/25 17:55:02 by rufurush         ###   ########.fr       */
+/*   Updated: 2025/11/26 17:48:28 by sbaba            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	run_simple_in_this_process(t_pipex *ps, t_ast *cmd, char **envp)
+int	run_simple_in_this_process(t_pipex *ps, t_ast *cmd)
 {
 	int		r;
 	int		st;
 	char	*full;
+	char	**envp;
 
 	r = apply_redirs(ps, cmd->redirs);
 	if (r == HEREDOC_ABORT)
@@ -28,8 +29,10 @@ int	run_simple_in_this_process(t_pipex *ps, t_ast *cmd, char **envp)
 	if (is_builtin(cmd->argv[0]) == SUCCESS)
 		return (exec_builtin(ps, cmd));
 	full = resolve_command_path(cmd->argv[0], ps);
+	envp = get_envp_as_string(ps);
 	st = execute_command(full, cmd->argv, envp, ps);
 	free(full);
+	free_envp(envp);
 	return (st);
 }
 
@@ -66,7 +69,7 @@ int	ms_wait_pipe_children(pid_t lp, pid_t rp)
 	return (last);
 }
 
-void	ms_run_left_child(t_pipex *ps, t_ast *left, char **envp, int fds[2])
+void	ms_run_left_child(t_pipex *ps, t_ast *left, int fds[2])
 {
 	int	st;
 
@@ -75,13 +78,13 @@ void	ms_run_left_child(t_pipex *ps, t_ast *left, char **envp, int fds[2])
 	close(fds[0]);
 	close(fds[1]);
 	if (left->type == NODE_PIPE)
-		st = run_pipe_node(ps, left->left, left->right, envp);
+		st = run_pipe_node(ps, left->left, left->right);
 	else
-		st = run_simple_in_this_process(ps, left, envp);
+		st = run_simple_in_this_process(ps, left);
 	_exit(st);
 }
 
-void	ms_run_right_child(t_pipex *ps, t_ast *right, char **envp, int fds[2])
+void	ms_run_right_child(t_pipex *ps, t_ast *right, int fds[2])
 {
 	int	st;
 
@@ -90,8 +93,8 @@ void	ms_run_right_child(t_pipex *ps, t_ast *right, char **envp, int fds[2])
 	close(fds[0]);
 	close(fds[1]);
 	if (right->type == NODE_PIPE)
-		st = run_pipe_node(ps, right->left, right->right, envp);
+		st = run_pipe_node(ps, right->left, right->right);
 	else
-		st = run_simple_in_this_process(ps, right, envp);
+		st = run_simple_in_this_process(ps, right);
 	_exit(st);
 }

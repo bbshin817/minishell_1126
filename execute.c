@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rufurush <rufurush@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbaba <sbaba@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 09:26:14 by kotadashiru       #+#    #+#             */
-/*   Updated: 2025/11/25 17:56:14 by rufurush         ###   ########.fr       */
+/*   Updated: 2025/11/26 17:46:30 by sbaba            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	process_parsed_line(char *line, t_pipex *ps, char **envp)
+int	process_parsed_line(char *line, t_pipex *ps)
 {
 	t_ast	*node_list;
 	int		handled;
@@ -29,7 +29,7 @@ int	process_parsed_line(char *line, t_pipex *ps, char **envp)
 		free(line);
 		return (0);
 	}
-	ps->last_status = run_pipeline_and_cleanup(node_list, ps, envp);
+	ps->last_status = run_pipeline_and_cleanup(node_list, ps);
 	return (0);
 }
 
@@ -51,7 +51,7 @@ int	handle_signals_and_empty(char *line, t_pipex *ps)
 	return (0);
 }
 
-int	process_line(char *line, t_pipex *ps, char **envp)
+int	process_line(char *line, t_pipex *ps)
 {
 	int	res;
 
@@ -60,10 +60,10 @@ int	process_line(char *line, t_pipex *ps, char **envp)
 		return (0);
 	if (res == 2)
 		return (1);
-	return (process_parsed_line(line, ps, envp));
+	return (process_parsed_line(line, ps));
 }
 
-int	run_line(char **envp, t_pipex *ps)
+int	run_line(t_pipex *ps)
 {
 	char	*line;
 	int		ret;
@@ -81,24 +81,23 @@ int	run_line(char **envp, t_pipex *ps)
 		free(line);
 		return (0);
 	}
-	ret = process_line(line, ps, envp);
+	ret = process_line(line, ps);
 	if (ret != 0)
 		return (ret);
 	return (0);
 }
 
-void	execute(int argc, char **argv, char **envp, t_pipex *ps)
+void	execute(int argc, char **argv, t_pipex *ps)
 {
 	int	ret;
 
 	(void)argc;
 	(void)argv;
-	(void)envp;
 	ps->path_array = ms_update_path_array_from_envlist(ps);
 	rl_catch_signals = 0;
 	while (1)
 	{
-		ret = run_line(envp, ps);
+		ret = run_line(ps);
 		if (ret < 0)
 			return ;
 		if (ret > 0)

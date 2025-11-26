@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rufurush <rufurush@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbaba <sbaba@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 16:42:57 by kotadashiru       #+#    #+#             */
-/*   Updated: 2025/11/26 13:45:47 by rufurush         ###   ########.fr       */
+/*   Updated: 2025/11/26 17:51:07 by sbaba            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ int	main(int argc, char **argv, char **envp)
 
 	ps = init_pipex(envp);
 	using_history();
-	execute(argc, argv, envp, &ps);
+	execute(argc, argv, &ps);
 	rl_clear_history();
 	free_pipex(&ps);
 	return (0);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_utils6.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rufurush <rufurush@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbaba <sbaba@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 17:12:28 by kotadashiru       #+#    #+#             */
-/*   Updated: 2025/11/25 17:55:24 by rufurush         ###   ########.fr       */
+/*   Updated: 2025/11/26 17:49:22 by sbaba            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,10 @@ void	free_arg_list_a(t_arg *a)
 	}
 }
 
-static void	exec_cmd_child(t_ast *node_list, char **envp, t_pipex *ps)
+static void	exec_cmd_child(t_ast *node_list, t_pipex *ps)
 {
 	char	*full_path;
+	char	**envp;
 	int		execute;
 
 	signal(SIGINT, SIG_DFL);
@@ -45,9 +46,12 @@ static void	exec_cmd_child(t_ast *node_list, char **envp, t_pipex *ps)
 	if (apply_redirs(ps, node_list->redirs) < 0)
 		_exit(1);
 	full_path = resolve_command_path(node_list->argv[0], ps);
+	envp = get_envp_as_string(ps);
 	execute = execute_command(full_path, node_list->argv, envp, ps);
 	if (full_path)
 		free(full_path);
+	if (envp)
+		free_envp(envp);
 	_exit(execute);
 }
 
@@ -64,7 +68,7 @@ static int	wait_cmd_child(pid_t pid, t_pipex *ps)
 	return (code);
 }
 
-int	exec_cmd_node(t_ast *node_list, char **envp, t_pipex *ps)
+int	exec_cmd_node(t_ast *node_list, t_pipex *ps)
 {
 	pid_t	pid;
 
@@ -77,6 +81,6 @@ int	exec_cmd_node(t_ast *node_list, char **envp, t_pipex *ps)
 		return (0);
 	}
 	if (pid == 0)
-		exec_cmd_child(node_list, envp, ps);
+		exec_cmd_child(node_list, ps);
 	return (wait_cmd_child(pid, ps));
 }

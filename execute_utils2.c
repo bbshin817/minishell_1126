@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_utils2.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rufurush <rufurush@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbaba <sbaba@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/29 12:14:35 by kotadashiru       #+#    #+#             */
-/*   Updated: 2025/11/26 13:43:35 by rufurush         ###   ########.fr       */
+/*   Updated: 2025/11/26 17:46:49 by sbaba            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,11 @@ int	try_parent_builtin_then_cleanup(t_ast *node_list, t_pipex *ps, char *line,
 	return (0);
 }
 
-int	run_pipeline_and_cleanup(t_ast *node_list, t_pipex *ps, char **envp)
+int	run_pipeline_and_cleanup(t_ast *node_list, t_pipex *ps)
 {
 	int	status;
 
-	status = run_node(ps, node_list, envp);
+	status = run_node(ps, node_list);
 	ast_free_a(node_list);
 	return (status);
 }
